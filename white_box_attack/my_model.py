@@ -7,6 +7,7 @@ import torch.optim as optim
 import torch.nn.init as init
 from torchvision import datasets, transforms  # 加载pytorch官方提供的dataset
 import pickle
+import numpy as np
 
 class Net(nn.Module):
     def __init__(self):
@@ -29,6 +30,7 @@ class Net(nn.Module):
 
 
     def forward(self, x):
+        x = (x - torch.mean(x)) / torch.var(x)
         x = F.pad(x, (1, 1, 1, 1))
         x = F.relu(self.conv1(x))
         x = F.pad(x, (1, 1, 1, 1))
@@ -158,16 +160,10 @@ def main():
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
     train_loader = torch.utils.data.DataLoader(
         datasets.FashionMNIST('./fashionmnist_data/', train=True, download=True,
-                       transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
-                       ])),
+                       transform=transforms.ToTensor()),
         batch_size=args.batch_size, shuffle=True, **kwargs)
     test_loader = torch.utils.data.DataLoader(
-        datasets.FashionMNIST('./fashionmnist_data/', train=False, transform=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))
-        ])),
+        datasets.FashionMNIST('./fashionmnist_data/', train=False, transform=transforms.ToTensor()),
         batch_size=args.test_batch_size, shuffle=True, **kwargs)
 
     if not args.model_url:
