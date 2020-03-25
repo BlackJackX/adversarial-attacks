@@ -91,6 +91,7 @@ def test(args, model, device, test_loader):
     correct = 0
     with torch.no_grad():
         for data, target in test_loader:
+            print(data.shape)
             data, target = data.to(device), target.to(device)
             output = model(data)
             test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
@@ -109,20 +110,19 @@ def select_img(args, model, device, test_loader):
     num = 0
     with torch.no_grad():
         for data, target in test_loader:
-            if num >= 1000:
-                break
             data, target = data.to(device), target.to(device)
             output = model(data)
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             for i, b in enumerate(pred.eq(target.view_as(pred))):
-                if num >= 1000:
-                    break
                 if b:
                     num += 1
                     with open("./success_imgs/img"+str(num)+".pkl", "wb") as f:
                         pickle.dump(data[i], f)
-                    print("Select %d images" %num)
 
+                    print("Select %d images" %num)
+            print(num)
+            if num >= 1000:
+                break
     print("Select images success")
 
 
@@ -183,8 +183,7 @@ def main():
     else:
         model = Net().to(device)
         model.load_state_dict(torch.load(args.model_url))
-        for epoch in range(1, args.epochs + 1):
-            select_img(args, model, device, test_loader)
+        select_img(args, model, device, test_loader)
 
 # 当.py文件直接运行时，该语句及以下的代码被执行，当.py被调用时，该语句及以下的代码不被执行
 if __name__ == '__main__':
