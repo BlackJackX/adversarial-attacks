@@ -132,11 +132,15 @@ def create_adv_img(num):
 
 if __name__ == "__main__":
     correct = 0
+    success_list = []
     for i in range(1, 1001):
         print("No. %d" %i)
         try:
             if create_adv_img(i):
                 correct += 1
+                success_list.append(i)
         except Exception as e:
             print(str(e))
+    with open("success_list", "wb") as f:
+        pickle.dump("success_list", f)
     print(correct / 1000)

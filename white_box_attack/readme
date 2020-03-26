@@ -1,0 +1,3 @@
+my_model acc 92%
+
+white_box_attack acc 0.506
