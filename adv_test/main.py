@@ -111,11 +111,10 @@ def draw_img(img, label):
     plt.imshow(torch.squeeze(img.cpu()))
     plt.show()
 
-adv_data = []
 def create_adv_img(num):
     data = load_success_img(num).cuda()
     img = torch.unsqueeze(data, dim=0)
-    adv, noi = non_targeted_attack(img, 50)
+    adv, noi = non_targeted_attack(img, 500)
     img_label = get_class(img)
     adv_label = get_class(adv)
     print(img_label, adv_label)
@@ -123,11 +122,10 @@ def create_adv_img(num):
         print(img_label + ' failed')
         return False
     else:
-        print(torch.dist(img.cuda(), adv.cuda()))
         print(img_label + ' ' + adv_label + ' successed')
-        #draw_result(img, noi, adv, num, img_label, adv_label)
-        adv_data.append(adv)
+        draw_result(img, noi, adv, num, img_label, adv_label)
         return True
+
 
     #draw_result(img, noi[0], adv[0])
 
@@ -135,14 +133,12 @@ def create_adv_img(num):
 if __name__ == "__main__":
     correct = 0
     success_list = []
-    for i in range(1, 3600):
+    for i in range(1, 1001):
         print("No. %d" %i)
-        # try:
-        create_adv_img(i)
-        # except Exception as e:
-        #     print(str(e))
-        if len(adv_data) >= 1100:
-            break
-    with open('./adv_data.pkl', 'wb') as f:
-        pickle.dump(adv_data, f)
-    # print(correct / 1000)
+        try:
+            if create_adv_img(i):
+                correct += 1
+        except Exception as e:
+            print(str(e))
+
+    print(correct / 1000)

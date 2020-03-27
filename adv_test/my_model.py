@@ -107,7 +107,7 @@ def test(args, model, device, test_loader):
 
 def select_img(args, model, device, test_loader):
     model.eval()
-    num = 5400
+    num = 0
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
@@ -121,7 +121,7 @@ def select_img(args, model, device, test_loader):
 
                     print("Select %d images" %num)
             print(num)
-            if num >= 8000:
+            if num >= 1000:
                 break
     print("Select images success")
 
